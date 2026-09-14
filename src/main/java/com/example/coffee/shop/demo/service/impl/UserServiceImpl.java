@@ -1,6 +1,5 @@
 package com.example.coffee.shop.demo.service.impl;
 
-import com.example.coffee.shop.demo.exception.AppException;
 import com.example.coffee.shop.demo.exception.InvalidPasswordException;
 import com.example.coffee.shop.demo.exception.UserAlreadyExistsException;
 import com.example.coffee.shop.demo.exception.UserNotFoundException;
@@ -11,12 +10,13 @@ import com.example.coffee.shop.demo.repository.UserRepository;
 import com.example.coffee.shop.demo.service.UserService;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
+
+@Service
 public class UserServiceImpl implements UserService {
     private UserRepository repository;
     private PasswordEncoder passwordEncoder;
@@ -28,16 +28,13 @@ public class UserServiceImpl implements UserService {
     private boolean isPasswordValid(String password){
         if (password == null) return false;
 
-        String regex = "\\A(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=]).{8,}\\Z";
+        String regex = "\\A(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,}\\Z";
 
-        Pattern pattern = Pattern.compile(regex);
-
-        Matcher matcher = pattern.matcher(password);
-        return matcher.matches();
+        return password.matches(regex);
     }
 
     private boolean isEmailExist(String email){
-        return repository.findByEmail(email);
+        return repository.existsByEmail(email);
     }
 
     @Override
@@ -55,7 +52,6 @@ public class UserServiceImpl implements UserService {
                 request.getEmail(),
                 passwordEncoder.encode(request.getPassword())
         );
-        user.onCreate();
         repository.save(user);
         return new UserResponse(
                 user.getId(),
@@ -107,7 +103,6 @@ public class UserServiceImpl implements UserService {
         user.setName(request.getName());
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setUpdatedAt(LocalDate.now());
 
         repository.save(user);
         return new UserResponse(
