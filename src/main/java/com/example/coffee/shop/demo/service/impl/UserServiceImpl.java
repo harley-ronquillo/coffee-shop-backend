@@ -26,42 +26,51 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse createUser(UserRequest request) {
-        if(isEmailExist(request.getEmail())){
-           throw new IllegalArgumentException("This email already exist");
-        }
+        try{
+            if(isEmailExist(request.getEmail())){
+                throw new IllegalArgumentException("This email already exist " + request.getEmail());
+            }
 
-        User user = new User(
-                request.getName(),
-                request.getEmail(),
-                passwordEncoder.encode(request.getPassword())
-        );
-        user.onCreate();
-     repository.save(user);
-     return new UserResponse(
-             user.getId(),
-             user.getName(),
-             user.getEmail(),
-             user.getIsDeleted(),
-             user.getCreatedAt(),
-             user.getUpdatedAt(),
-             user.getDeletedAt()
-     );
+            User user = new User(
+                    request.getName(),
+                    request.getEmail(),
+                    passwordEncoder.encode(request.getPassword())
+            );
+            user.onCreate();
+            repository.save(user);
+            return new UserResponse(
+                    user.getId(),
+                    user.getName(),
+                    user.getEmail(),
+                    user.getIsDeleted(),
+                    user.getCreatedAt(),
+                    user.getUpdatedAt(),
+                    user.getDeletedAt()
+            );
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public UserResponse findUserById(Long id) {
-        User user = repository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("This user id does not exist"));
+        try{
+            User user = repository.findById(id)
+                    .orElseThrow(() -> new IllegalArgumentException("This user id does not exist: " + id));
 
-        return new UserResponse(
-                user.getId(),
-                user.getName(),
-                user.getEmail(),
-                user.getIsDeleted(),
-                user.getCreatedAt(),
-                user.getUpdatedAt(),
-                user.getDeletedAt()
-        );
+            return new UserResponse(
+                    user.getId(),
+                    user.getName(),
+                    user.getEmail(),
+                    user.getIsDeleted(),
+                    user.getCreatedAt(),
+                    user.getUpdatedAt(),
+                    user.getDeletedAt()
+            );
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     @Override
@@ -82,42 +91,50 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse updateUser(Long id, UserRequest request) {
-        User user = repository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("This user id does not exist"));
-        user.setName(request.getName());
-        user.setEmail(request.getEmail());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setUpdatedAt(LocalDate.now());
+        try{
+            User user = repository.findById(id)
+                    .orElseThrow(() -> new IllegalArgumentException("This user id does not exist"));
+            user.setName(request.getName());
+            user.setEmail(request.getEmail());
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
+            user.setUpdatedAt(LocalDate.now());
 
-        repository.save(user);
-        return new UserResponse(
-                user.getId(),
-                user.getName(),
-                user.getEmail(),
-                user.getIsDeleted(),
-                user.getCreatedAt(),
-                user.getUpdatedAt(),
-                user.getDeletedAt()
-        );
+            repository.save(user);
+            return new UserResponse(
+                    user.getId(),
+                    user.getName(),
+                    user.getEmail(),
+                    user.getIsDeleted(),
+                    user.getCreatedAt(),
+                    user.getUpdatedAt(),
+                    user.getDeletedAt()
+            );
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public UserResponse deleteUser(Long id) {
-        User user = repository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("This user id does not exist"));
+        try{
+            User user = repository.findById(id)
+                    .orElseThrow(() -> new IllegalArgumentException("This user id does not exist"));
 
-        user.setIsDeleted(1);
-        user.setDeletedAt(LocalDate.now());
+            user.setIsDeleted(1);
+            user.setDeletedAt(LocalDate.now());
 
-        repository.save(user);
-        return new UserResponse(
-                user.getId(),
-                user.getName(),
-                user.getEmail(),
-                user.getIsDeleted(),
-                user.getCreatedAt(),
-                user.getUpdatedAt(),
-                user.getDeletedAt()
-        );
+            repository.save(user);
+            return new UserResponse(
+                    user.getId(),
+                    user.getName(),
+                    user.getEmail(),
+                    user.getIsDeleted(),
+                    user.getCreatedAt(),
+                    user.getUpdatedAt(),
+                    user.getDeletedAt()
+            );
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
