@@ -45,6 +45,11 @@ public class User {
         this.updatedAt = LocalDate.now();
     }
 
+    @PreUpdate
+    public void onUpdate(){
+        this.updatedAt = LocalDate.now();
+    }
+
     public User(String name, String email, String password){
         this.name= name;
         this.email = email;
