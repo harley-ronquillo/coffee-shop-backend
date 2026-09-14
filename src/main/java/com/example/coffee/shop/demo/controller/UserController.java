@@ -1,8 +1,10 @@
 package com.example.coffee.shop.demo.controller;
 
+import com.example.coffee.shop.demo.model.dto.ApiResponse;
 import com.example.coffee.shop.demo.model.dto.UserRequest;
 import com.example.coffee.shop.demo.model.dto.UserResponse;
 import com.example.coffee.shop.demo.service.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,9 +21,9 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserResponse> createUser(@RequestBody UserRequest request){
-        return ResponseEntity.ok()
-                .body(service.createUser(request));
+    public ResponseEntity<ApiResponse<UserResponse>> createUser(@RequestBody UserRequest request){
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.success(HttpStatus.CREATED.value(), service.createUser(request)));
     }
 
     @PutMapping("/$id")
